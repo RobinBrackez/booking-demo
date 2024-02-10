@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-
 #[ORM\Entity(repositoryClass: MeetingRoomRepository::class)]
 class MeetingRoom
 {
@@ -21,6 +20,9 @@ class MeetingRoom
 
     #[ORM\OneToMany(targetEntity: Booking::class, mappedBy: 'meetingRoom')]
     private Collection $bookings;
+
+    #[ORM\Column]
+    private ?int $capacity = null;
 
     public function __construct()
     {
@@ -70,6 +72,18 @@ class MeetingRoom
                 $booking->setMeetingRoom(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCapacity(): ?int
+    {
+        return $this->capacity;
+    }
+
+    public function setCapacity(int $capacity): static
+    {
+        $this->capacity = $capacity;
 
         return $this;
     }
