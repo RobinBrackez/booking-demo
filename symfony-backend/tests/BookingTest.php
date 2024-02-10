@@ -18,43 +18,43 @@ class BookingTest extends KernelTestCase
 
         $scenarios = [
             [
-                'room_id' => 4,
+                'room_id' => 2,
                 'start_date' => '2025-01-01T14:00:00+02:00',
                 'end_date' => '2025-01-01T15:30:00+02:00',
                 'expects_valid' => false,
             ],
             [
-                'room_id' => 4,
+                'room_id' => 2,
                 'start_date' => '2025-01-01T14:15:00+02:00',
                 'end_date' => '2025-01-01T15:15:00+02:00',
                 'expects_valid' => false,
             ],
             [
-                'room_id' => 4,
+                'room_id' => 2,
                 'start_date' => '2025-01-01T14:15:00+02:00',
                 'end_date' => '2025-01-01T15:45:00+02:00',
                 'expects_valid' => false,
             ],
             [
-                'room_id' => 4,
+                'room_id' => 2,
                 'start_date' => '2025-01-01T13:45:00+02:00',
                 'end_date' => '2025-01-01T14:15:00+02:00',
                 'expects_valid' => false,
             ],
             [
-                'room_id' => 4,
+                'room_id' => 2,
                 'start_date' => '2025-01-01T13:45:00+02:00',
                 'end_date' => '2025-01-01T16:15:00+02:00',
                 'expects_valid' => false,
             ],
             [
-                'room_id' => 4,
+                'room_id' => 2,
                 'start_date' => '2025-01-01T13:00:00+02:00',
                 'end_date' => '2025-01-01T13:30:00+02:00',
                 'expects_valid' => true,
             ],
             [
-                'room_id' => 2,
+                'room_id' => 4,
                 'start_date' => '2025-01-01T13:45:00+02:00',
                 'end_date' => '2025-01-01T16:15:00+02:00',
                 'expects_valid' => true,
@@ -90,7 +90,7 @@ class BookingTest extends KernelTestCase
                 $this->assertTrue($thrownException, 'An exception should be thrown for scenario '.$i);
             }
         }
-        $this->assertEquals(count($scenarios), $i, 'All scenarios should be executed');
+        $this->assertEquals(count($scenarios) - 1, $i, 'All scenarios should be executed');
     }
 
     protected function getService($serviceName)
