@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Booking;
+use App\Entity\MeetingRoom;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -31,6 +32,23 @@ class BookingRepository extends ServiceEntityRepository
             ->setParameter('startsAt', $booking->getStartsAt())
             ->setParameter('endsAt', $booking->getEndsAt())
             ->setParameter('meetingRoom', $booking->getMeetingRoom())
+            ->setMaxResults(1)
+        ;
+
+        return $queryBuilder->getQuery()->getOneOrNullResult();
+    }
+
+    public function findBooking(MeetingRoom $meetingRoom, \DateTimeImmutable $startsAt, \DateTimeImmutable $endsAt): ?Booking
+    {
+        $queryBuilder = $this->createQueryBuilder('b');
+        $queryBuilder
+            ->where('b.startsAt = :startsAt')
+            ->andWhere('b.endsAt = :endsAt')
+            ->andWhere('b.meetingRoom = :meetingRoom')
+            ->setParameter('startsAt', $startsAt)
+            ->setParameter('endsAt', $endsAt)
+            ->setParameter('meetingRoom', $meetingRoom)
+            ->setMaxResults(1)
         ;
 
         return $queryBuilder->getQuery()->getOneOrNullResult();

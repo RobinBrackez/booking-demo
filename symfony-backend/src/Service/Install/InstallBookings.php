@@ -4,6 +4,7 @@ namespace App\Service\Install;
 
 use App\Entity\Booking;
 use App\Entity\User;
+use App\Repository\BookingRepository;
 use App\Repository\MeetingRoomRepository;
 use App\Repository\UserRepository;
 use App\Service\Install\Contracts\InstallInterface;
@@ -18,13 +19,14 @@ class InstallBookings extends AbstractInstall implements InstallInterface
     private const string ROOM_ID_FIELD = 'room_id';
     private const string BOOKED_BY_EMAIL_FIELD = 'booked_for';
 
-    protected const array REQUIRED_FIELDS = [self::ID_FIELD, self::STARTS_AT_FIELD, self::ENDS_AT_FIELD, self::ROOM_ID_FIELD, self::BOOKED_BY_EMAIL_FIELD];
+    protected const array REQUIRED_FIELDS = [self::STARTS_AT_FIELD, self::ENDS_AT_FIELD, self::ROOM_ID_FIELD, self::BOOKED_BY_EMAIL_FIELD];
 
     public function __construct(
         string $jsonFilePath,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
         private MeetingRoomRepository $meetingRoomRepository,
+        private BookingRepository $bookingRepository,
         private UserRepository $userRepository,
     ) {
         parent::__construct($jsonFilePath, $entityManager, $logger);
@@ -32,21 +34,19 @@ class InstallBookings extends AbstractInstall implements InstallInterface
 
     public function createEntity(array $entityData): ?Booking
     {
-        $bookingRoom = $this->meetingRoomRepository->find($entityData[self::ID_FIELD]);
-        if ($bookingRoom) {
-            return null;
-        }
-
-        $booking = new Booking();
-        $booking->setStartsAt(new \DateTimeImmutable($entityData[self::STARTS_AT_FIELD]));
-        $booking->setEndsAt(new \DateTimeImmutable($entityData[self::ENDS_AT_FIELD]));
-
         $meetingRoom = $this->meetingRoomRepository->find($entityData[self::ROOM_ID_FIELD]);
         if (!$meetingRoom) {
             throw new \Exception(sprintf('Meeting room with id %d not found. Did you run the meetingroom install script?', $entityData[self::ROOM_ID_FIELD]));
         }
 
-        $booking->setMeetingRoom($meetingRoom);
+        $startsAt = new \DateTimeImmutable($entityData[self::STARTS_AT_FIELD]);
+        $endsAt = new \DateTimeImmutable($entityData[self::ENDS_AT_FIELD]);
+
+        $bookingRoom = $this->bookingRepository->findBooking($meetingRoom, $startsAt, $endsAt);
+        if ($bookingRoom) {
+            return null; // already booked
+        }
+
         $bookedByUser = $this->userRepository->findOneByEmail($entityData[self::BOOKED_BY_EMAIL_FIELD]);
 
         if (!$bookedByUser) {
@@ -57,7 +57,14 @@ class InstallBookings extends AbstractInstall implements InstallInterface
             $this->entityManager->persist($bookedByUser);
         }
 
-        $booking->setBookedBy($bookedByUser);
+        $booking = new Booking();
+        $booking
+            ->setStartsAt($startsAt)
+            ->setEndsAt($endsAt)
+            ->setMeetingRoom($meetingRoom)
+            ->setBookedBy($bookedByUser)
+        ;
+
         $this->logger->info(sprintf('Booking created for user %s', $bookedByUser->getEmail()));
 
         return $booking;
