@@ -1,0 +1,47 @@
+#!/bin/sh
+# husky
+
+# Settings
+DIV_LG="========================================"
+DIV_ERROR="########################################"
+
+hookName=$(basename "$0")
+
+debug() {
+  [ "${HUSKY_DEBUG}" = "true" ] && echo "husky:debug $1"
+}
+
+debug "$hookName hook started..."
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "Can't find node in PATH, trying to find a node binary on your system"
+fi
+
+echo
+echo $DIV_LG
+echo "> Validating the api with php-cs-fixer. Auto correct if wrong"
+echo $DIV_LG
+echo
+
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep 'symfony-backend\/.*\.php$')
+if [ "$FILES" != "" ]; then
+    RESPONSE=$(docker exec booking-symfony-1 vendor/bin/php-cs-fixer fix $FILES --config=.php-cs-fixer.dist.php --using-cache=no)
+	DIDNTFIX='Fixed 0'
+	if [ "${RESPONSE#*$DIDNTFIX}" != "$RESPONSE" ]; then
+		echo "Didn't fix any files (=ok)"
+	else
+		echo
+		echo $DIV_ERROR
+		echo "[api] > PHP CS Fixer fixed some files. Please review the changes and commit again. Pay attention for partial commits."
+		echo $RESPONSE
+		echo $DIV_ERROR
+		echo
+		exit 1
+	fi
+fi
+
+
+echo
+echo $DIV_LG
+echo "> Done pre-commit hook!"
+echo $DIV_LG
