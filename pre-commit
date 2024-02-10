@@ -23,7 +23,7 @@ echo "> Validating the api with php-cs-fixer. Auto correct if wrong"
 echo $DIV_LG
 echo
 
-FILES=$(git diff --cached --name-only --diff-filter=ACM | grep 'symfony-backend\/.*\.php$')
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep 'symfony-backend\/.*\.php$' | sed 's|symfony-backend/||')
 if [ "$FILES" != "" ]; then
     RESPONSE=$(docker exec booking-symfony-1 vendor/bin/php-cs-fixer fix $FILES --config=.php-cs-fixer.dist.php --using-cache=no)
 	DIDNTFIX='Fixed 0'
