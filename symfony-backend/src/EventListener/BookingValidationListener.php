@@ -29,6 +29,9 @@ class BookingValidationListener
         if ($booking->getStartsAt() > $booking->getEndsAt()) {
             throw new \InvalidArgumentException('Start date cannot be after end date');
         }
+        if ($booking->getStartsAt() === $booking->getEndsAt()) {
+            throw new \InvalidArgumentException('Start date cannot be equal to the end date');
+        }
         $bookingRepository = $args->getObjectManager()->getRepository(Booking::class);
         $overlappingBooking = $bookingRepository->getOverlappingBooking($booking);
 
