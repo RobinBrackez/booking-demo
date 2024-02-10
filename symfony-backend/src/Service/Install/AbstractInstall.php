@@ -30,8 +30,12 @@ abstract class AbstractInstall
 
             $entity = $this->createEntity($entityData);
             if ($entity) {
-                $this->entityManager->persist($entity);
-                $this->entityManager->flush();
+                try {
+                    $this->entityManager->persist($entity);
+                    $this->entityManager->flush();
+                } catch (\Exception $e) {
+                    $this->logger->error($e->getMessage());
+                }
             }
         }
     }

@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    # first week of January 2025, officially from 30th December till 5th of January
+    booking.allowed_start_date: '2024-12-30T00:00:00'
+    booking.allowed_end_date: '2025-01-05T23:59:59'
 
 services:
     # default configuration for services in *this* file
@@ -34,3 +37,8 @@ services:
     App\Service\Install\InstallMeetingRooms:
         arguments:
             $jsonFilePath:  '%kernel.project_dir%/install-data/meeting-rooms.json'
+
+    App\EventListener\BookingValidationListener:
+        arguments:
+            $allowedStartDate: '%booking.allowed_start_date%'
+            $allowedEndDate: '%booking.allowed_end_date%'
