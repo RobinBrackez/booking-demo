@@ -38,7 +38,7 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 
 		if ls -A migrations/*.php >/dev/null 2>&1; then
 			php bin/console doctrine:migrations:migrate --no-interaction
-			php bin/console app:install --bookings --rooms
+			php bin/console app:install --bookings --meeting-rooms -vvv
 		fi
 	else
         echo "DATABASE_URL is not set, skipping migrations"
