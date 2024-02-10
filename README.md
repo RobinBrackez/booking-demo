@@ -21,11 +21,24 @@ composer install
 ./bin/console app:install --meeting-rooms --bookings
 ````
 
-visit: https://localhost:8088
+## Run
+
+After running `docker compose up`, you can see the demo at:
+
+Api: http://0.0.0.0:8000/api
+
+Application: https://localhost:3000
 
 For new development, copy the commit hooks to automatically apply php-cs-fixer:
 ````
 cp pre-commit .git/hooks/pre-commit
+````
+
+## Tests
+
+````
+cp ./phpunit.xml.dist ./phpunit.xml
+./bin/phpunit
 ````
 
 ## Thoughts / Todo's:
