@@ -2,26 +2,48 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\MeetingRoomRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    operations: [
+        new Get(
+            uriTemplate: '/meeting-rooms/{id}',
+            normalizationContext: ['groups' => ['meeting_room:read']]
+        ),
+        new GetCollection(
+            uriTemplate: '/meeting-rooms',
+            normalizationContext: ['groups' => ['meeting_room:read']]
+        ),
+    ],
+)]
 #[ORM\Entity(repositoryClass: MeetingRoomRepository::class)]
 class MeetingRoom
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['meeting_room:read', 'booking:write', 'booking:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Groups(['meeting_room:read', 'booking:read'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(targetEntity: Booking::class, mappedBy: 'meetingRoom')]
     private Collection $bookings;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Groups(['meeting_room:read'])]
     private ?int $capacity = null;
 
     public function __construct()
