@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  symfony:
+    build: ./symfony-backend
+    volumes:
+      - ./symfony-backend:/app
+      - /home/robin/.ssh:/home/www-data/.ssh
+      - /home/robin/.bashrc:/home/www-data/.bashrc
+      - /home/robin/.bash_aliases:/home/www-data/.bash_aliases
+    ports:
+      - "8000:8000"
+    command: php -S 0.0.0.0:8000 -t public
+    environment:
+      - APP_ENV=dev
+      - DATABASE_URL=pgsql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/${POSTGRES_DB:-app}
+    links:
+      - database
+
+  react:
+    build: ./react-frontend
+    volumes:
+      - ./react-frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    volumes:
+      - ./docker/pgsql:/var/lib/postgresql/data:rw
+    ports:
+      - "5432"
+
+
