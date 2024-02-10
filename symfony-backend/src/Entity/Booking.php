@@ -14,18 +14,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     operations: [
-        new Get(
-            uriTemplate: '/bookings/{id}',
-            normalizationContext: ['groups' => ['booking:read']]
-        ),
-        new Post(uriTemplate: '/bookings',
-            normalizationContext: ['groups' => ['booking:write']]
-        ),
-        // The GetCollection operation returns a list of Books.
-        new GetCollection(uriTemplate: '/bookings',
-            normalizationContext: ['groups' => ['booking:read']]
-        ),
+        new Get(uriTemplate: '/bookings/{id}'),
+        new Post(uriTemplate: '/bookings'),
+        new GetCollection(uriTemplate: '/bookings'),
     ],
+    normalizationContext: ['groups' => ['booking:read']],
+    denormalizationContext: ['groups' => ['booking:write']]
 )]
 #[ORM\Entity(repositoryClass: BookingRepository::class)]
 class Booking implements Timestampable
@@ -35,7 +29,7 @@ class Booking implements Timestampable
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['booking:write', 'booking:read'])]
+    #[Groups(['booking:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]

@@ -16,13 +16,12 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(
             uriTemplate: '/meeting-rooms/{id}',
-            normalizationContext: ['groups' => ['meeting_room:read']]
         ),
         new GetCollection(
             uriTemplate: '/meeting-rooms',
-            normalizationContext: ['groups' => ['meeting_room:read']]
         ),
     ],
+    normalizationContext: ['groups' => ['meeting_room:read']]
 )]
 #[ORM\Entity(repositoryClass: MeetingRoomRepository::class)]
 class MeetingRoom
