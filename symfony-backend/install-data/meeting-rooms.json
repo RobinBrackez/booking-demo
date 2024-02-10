@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "name": "Sirius",
+        "capacity": 2
+    },
+    {
+        "id": 2,
+        "name": "Arcturus",
+        "capacity": 4
+    },
+    {
+        "id": 3,
+        "name": "Antares",
+        "capacity": 8
+    },
+    {
+        "id": 4,
+        "name": "Canis Major",
+        "capacity": 24
+    }
+]

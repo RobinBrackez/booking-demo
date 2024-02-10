@@ -26,3 +26,11 @@ services:
     annotation_reader:
         class: Doctrine\Common\Annotations\AnnotationReader
         public: false
+
+    App\Service\Install\InstallBookings:
+        arguments:
+            $jsonFilePath:  '%kernel.project_dir%/install-data/bookings.json'
+
+    App\Service\Install\InstallMeetingRooms:
+        arguments:
+            $jsonFilePath:  '%kernel.project_dir%/install-data/meeting-rooms.json'
