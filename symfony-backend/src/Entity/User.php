@@ -8,11 +8,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * To be extended to be used with Symfony's security system
+ * To be extended to be used with Symfony's security system.
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User
+class User implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -75,5 +75,10 @@ class User
         }
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->email;
     }
 }
