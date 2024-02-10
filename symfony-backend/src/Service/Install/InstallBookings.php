@@ -11,9 +11,12 @@ use App\Service\Install\Contracts\InstallInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Create Booking entities from a json file. This is mainly used to bootstrap the project.
+ * Running it twice, won't create duplicate records.
+ */
 class InstallBookings extends AbstractInstall implements InstallInterface
 {
-    private const string ID_FIELD = 'id';
     private const string STARTS_AT_FIELD = 'start_date';
     private const string ENDS_AT_FIELD = 'end_date';
     private const string ROOM_ID_FIELD = 'room_id';
@@ -65,7 +68,7 @@ class InstallBookings extends AbstractInstall implements InstallInterface
             ->setBookedBy($bookedByUser)
         ;
 
-        $this->logger->info(sprintf('Booking created for user %s', $bookedByUser->getEmail()));
+        $this->logger->info(sprintf('Create booking for user %s', $bookedByUser->getEmail()));
 
         return $booking;
     }

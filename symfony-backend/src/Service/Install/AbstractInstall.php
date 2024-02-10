@@ -29,7 +29,7 @@ abstract class AbstractInstall
             }
 
             $entity = $this->createEntity($entityData);
-            if ($entity) {
+            if ($entity) { // null means it already exists
                 try {
                     $this->entityManager->persist($entity);
                     $this->entityManager->flush();
