@@ -8,9 +8,10 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/core": "^3.2",
+        "doctrine/annotations": "^2.0",
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
-        "doctrine/orm": "^3.0",
+        "doctrine/orm": "^2.0",
         "gedmo/doctrine-extensions": "*",
         "nelmio/cors-bundle": "^2.4",
         "phpdocumentor/reflection-docblock": "^5.3",
@@ -23,7 +24,7 @@
         "symfony/framework-bundle": "6.4.*",
         "symfony/property-access": "6.4.*",
         "symfony/property-info": "6.4.*",
-        "symfony/runtime": "6.4.*",
+        "symfony/runtime": "^6.4",
         "symfony/security-bundle": "6.4.*",
         "symfony/serializer": "6.4.*",
         "symfony/twig-bundle": "6.4.*",
@@ -79,8 +80,12 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.54",
         "friendsofphp/php-cs-fixer": "^3.22",
-        "kubawerlos/php-cs-fixer-custom-fixers": "^3.17"
+        "kubawerlos/php-cs-fixer-custom-fixers": "^3.17",
+        "phpunit/phpunit": "^9.0",
+        "symfony/browser-kit": "6.4.*",
+        "symfony/css-selector": "6.4.*",
+        "symfony/maker-bundle": "^1.54",
+        "symfony/phpunit-bridge": "^7.0"
     }
 }

@@ -41,7 +41,7 @@ RUN mkdir -p $COMPOSER_HOME/cache && \
     echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-pecl-xdebug.ini && \
     echo "xdebug.start_with_request=trigger" >> /usr/local/etc/php/conf.d/docker-php-pecl-xdebug.ini && \
     echo "xdebug.discover_client_host = 1" >> /usr/local/etc/php/conf.d/docker-php-pecl-xdebug.ini && \
-    echo "xdebug.client_host = 172.17.0.1" >> /usr/local/etc/php/conf.d/docker-php-pecl-xdebug.ini && \
+    echo "xdebug.client_host = 10.0.2.15" >> /usr/local/etc/php/conf.d/docker-php-pecl-xdebug.ini && \
     echo "xdebug.client_port = 9900" >> /usr/local/etc/php/conf.d/docker-php-pecl-xdebug.ini && \
     echo "xdebug.idekey = PhpStorm1" >> /usr/local/etc/php/conf.d/docker-php-pecl-xdebug.ini
 
