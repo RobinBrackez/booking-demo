@@ -1,8 +1,5 @@
 # Booking demo
 
-symfony new --api --version=6.4 --php=8.3 webapp2/
-
-
 ## Installation
 
 git clone ...
