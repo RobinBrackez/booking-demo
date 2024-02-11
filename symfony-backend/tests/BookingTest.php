@@ -103,12 +103,12 @@ class BookingTest extends KernelTestCase
         $scenarios = [
             [
                 'start_date' => $this->subOneHour($allowedStartDate),
-                'end_date' => $this->addOneHour($allowedStartDate),
+                'end_date' => $this->addHours($allowedStartDate),
                 'expects_valid' => false,
             ],
             [
-                'start_date' => $this->addOneHour($allowedStartDate),
-                'end_date' => $this->addOneHour($allowedEndDate),
+                'start_date' => $this->addHours($allowedStartDate),
+                'end_date' => $this->addHours($allowedEndDate),
                 'expects_valid' => false,
             ],
             [
@@ -118,12 +118,12 @@ class BookingTest extends KernelTestCase
             ],
             [
                 'start_date' => $this->subOneHour($allowedStartDate),
-                'end_date' => $this->addOneHour($allowedEndDate),
+                'end_date' => $this->addHours($allowedEndDate),
                 'expects_valid' => false,
             ],
             [
-                'start_date' => $this->addOneHour($allowedStartDate),
-                'end_date' => $this->subOneHour($allowedEndDate),
+                'start_date' => $this->addHours($allowedStartDate),
+                'end_date' => $this->addHours($allowedStartDate),
                 'expects_valid' => true,
             ],
         ];
@@ -163,9 +163,9 @@ class BookingTest extends KernelTestCase
         $this->assertEquals(count($scenarios) - 1, $i, 'All scenarios should be executed');
     }
 
-    private function addOneHour(\DateTimeImmutable $date): \DateTimeImmutable
+    private function addHours(\DateTimeImmutable $date, int $hours = 2): \DateTimeImmutable
     {
-        return $date->add(new \DateInterval('PT1H'));
+        return $date->add(new \DateInterval(sprintf('PT%sH', $hours)));
     }
 
     private function subOneHour(\DateTimeImmutable $date): \DateTimeImmutable
