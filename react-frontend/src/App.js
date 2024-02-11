@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {connect} from "react-redux";
 import {fetchMeetingRooms} from "./redux/actions/meetingRoomActions";
 import {useEffect} from "react";
+import MeetingRoom from "./components/MeetingRoom";
 
 const mapStateToProps = (state, ownProps) => {
   return {
@@ -40,14 +41,12 @@ const App = (props) => {
                   <div className="mb-3">
                     <label htmlFor="meetingRoom" className="form-label">Meeting Room Name</label>
                     {props.meetingRooms.length > 0 && (
-                      <select className="form-select" id="meetingRoom">
-                        <option value="">Select a room</option>
+                      <div>
                         {props.meetingRooms.map((room, index) => (
-                          <option key={index} value={room.id}>{room.name}</option>
+                          <MeetingRoom key={index} {...room} />
                         ))}
-                      </select>
+                      </div>
                     )}
-                    <input type="text" className="form-control" id="meetingRoom" placeholder="Enter room name" />
                   </div>
                   <div className="mb-3">
                     <label htmlFor="date" className="form-label">Date</label>
