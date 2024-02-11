@@ -42,3 +42,9 @@ services:
         arguments:
             $allowedStartDate: '%booking.allowed_start_date%'
             $allowedEndDate: '%booking.allowed_end_date%'
+
+
+    App\Controller\Api\SettingsController:
+        arguments:
+            $allowedStartDate: '%booking.allowed_start_date%'
+            $allowedEndDate: '%booking.allowed_end_date%'
