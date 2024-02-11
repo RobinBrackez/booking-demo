@@ -21,7 +21,7 @@ class ApiTest extends ApiTestCase
                 'startsAt' => '2025-01-04T03:30:00+00:00',
                 'endsAt' => '2025-01-04T04:30:00+00:00',
                 'meetingRoom' => '/api/meeting-rooms/1',
-                'bookedBy' => '/api/users/1',
+                'email' => 'test@gmail.com',
             ],
         ])->getStatusCode();
         $this->assertEquals(201, $statusCode);
