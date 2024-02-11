@@ -3,8 +3,10 @@ import {useEffect, useState} from "react";
 import MeetingRoom from "../MeetingRoom";
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import {fetchBookingsByDate} from "../../redux/actions/bookingActions";
+import {createBooking, fetchBookingsByDate} from "../../redux/actions/bookingActions";
 import {formatDateYMD} from "../../utils/dateUtils";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const mapStateToProps = (state) => {
   return {
@@ -20,6 +22,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchBookingsByDate: (date) => dispatch(fetchBookingsByDate(date)),
+    createBooking: (booking) => dispatch(createBooking(booking)),
   }
 }
 
@@ -27,7 +30,6 @@ const mapDispatchToProps = (dispatch) => {
 const BookingForm = (props) => {
 
   const [booking, setBooking] = useState({
-    isValid: false,
     selectedDate: null,
     startTime: null,
     endTime: null,
@@ -36,6 +38,7 @@ const BookingForm = (props) => {
     email: ''
   });
 
+  const[isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!props.allowedStartDate) {
@@ -66,10 +69,10 @@ const BookingForm = (props) => {
       return;
     }
     if (!checkRoomAvailability(booking.meetingRoom.id)) {
-      setBooking({...booking, isValid: false, meetingRoom: null});
+      setBooking({...booking, meetingRoom: null});
     }
     if (booking.capacity > booking.meetingRoom.capacity) {
-      setBooking({...booking, isValid: false, meetingRoom: null});
+      setBooking({...booking, meetingRoom: null});
     }
   }, [booking.startTime, booking.endTime, booking.selectedDate, booking.capacity]);
 
@@ -153,7 +156,52 @@ const BookingForm = (props) => {
   }
 
   function onBook() {
+    const errors = [];
 
+    if (booking.meetingRoom === null) {
+      errors.push('Select an available meeting room');
+    }
+
+    if (!booking.capacity) {
+      errors.push('Enter the number of participants');
+    }
+
+    if (booking.meetingRoom && !checkRoomAvailability(booking.meetingRoom.id)) {
+      // this shouldn't happen because it's caught in the useEffect hook
+      errors.push('The selected meeting room is unavailable at the selected time');
+    }
+
+    if (booking.meetingRoom && booking.capacity > booking.meetingRoom.capacity) {
+      // this shouldn't happen because it's caught in the useEffect hook
+      errors.push('The selected meeting room is over capacity');
+    }
+
+    if (!booking.email) {
+      errors.push('Enter your email');
+    }
+
+    if (errors.length > 0) {
+      errors.forEach(error => {
+        toast.error(error);
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // Dispatch the booking
+    props.createBooking({
+      ...booking,
+      startsAt: booking.startTime,
+      endsAt: booking.endTime,
+      user: {
+        email: booking.email
+      }
+    });
+  }
+
+  function onEmailChanged(event) {
+    setBooking({...booking, email: event.target.value});
   }
 
   return (
@@ -172,7 +220,7 @@ const BookingForm = (props) => {
       <div className="mb-3">
         <label htmlFor="numberOfParticpants" className="form-label">Number Of Participants</label>
         <input type="number" className="form-control" id="numberOfParticpants"
-               onChange={(value) => onCapacityChanged(value)}/>
+               onChange={(event) => onCapacityChanged(event)}/>
       </div>
       <div className="container text-center">
         <div className="row row-cols-2 g-lg-3">
@@ -220,9 +268,10 @@ const BookingForm = (props) => {
       </div>
       <div className="mb-3">
         <label htmlFor="email" className="form-label">Email</label>
-        <input type="email" className="form-control" id="email"/>
+        <input type="email" className="form-control" id="email" onClick={(event) => onEmailChanged(event)}/>
       </div>
-      <button type="submit" className="btn btn-primary" onClick={() => onBook()}>Book Now</button>
+      <ToastContainer />
+      <button type="submit" className="btn btn-primary" onChange={() => onBook()}>Book Now</button>
     </div>
   );
 }
