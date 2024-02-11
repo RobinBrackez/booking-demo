@@ -28,9 +28,11 @@ export const bookingReducers = (state = initialState, booking) => {
           .map(b => ({ ...b, startsAt: new Date(b.startsAt), endsAt: new Date(b.endsAt) }))
           .filter(newBooking => !state.list.some(existing => existing.id === newBooking.id))
       ];
-
+      const sortedBookingList = updatedList.sort((a, b) => {
+        return new Date(a.startsAt) - new Date(b.startsAt);
+      });
       return {
-        list: updatedList,
+        list: sortedBookingList,
         error: '',
         mode: 'success',
       }
@@ -49,8 +51,11 @@ export const bookingReducers = (state = initialState, booking) => {
       }
     case CREATE_BOOKING_SUCCESS:
       const updatedBooking = { ...booking.payload, startsAt: new Date(booking.payload.startsAt), endsAt: new Date(booking.payload.endsAt) };
+      const sortedBookings = [...state.list, updatedBooking].sort((a, b) => {
+        return new Date(a.startsAt) - new Date(b.startsAt);
+      });
       return {
-        list: [...state.list, updatedBooking],
+        list: sortedBookings,
         error: '',
         mode: 'success',
         creationMode: 'success',

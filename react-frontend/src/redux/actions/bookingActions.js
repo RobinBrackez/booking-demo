@@ -80,7 +80,7 @@ export const fetchBookingsByDate = (startDate) => {
     dispatch(fetchBookingsRequest())
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 1);
-    axios.get(apiUrl + `/bookings?startsAt[before]=${formatDateYMD(endDate)}&startsAt[after]=${formatDateYMD(startDate)}`)
+    axios.get(apiUrl + `/bookings?startsAt[before]=${formatDateYMD(endDate)}&startsAt[after]=${formatDateYMD(startDate)}&order[startsAt]=asc`)
       .then(response => {
         const bookings = response.data['hydra:member'];
         dispatch(fetchBookingsSuccess(bookings));
