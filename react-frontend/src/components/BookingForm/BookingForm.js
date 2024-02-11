@@ -16,6 +16,8 @@ const mapStateToProps = (state) => {
     bookings: state.bookings.list,
     allowedStartDate: state.settings.allowedStartDate,
     allowedEndDate: state.settings.allowedEndDate,
+    creationMode: state.bookings.creationMode,
+    error: state.bookings.error,
   }
 }
 
@@ -55,6 +57,20 @@ const BookingForm = (props) => {
       selectedDate: new Date(props.allowedStartDate)
     });
   }, [props.allowedStartDate]);
+
+  useEffect(() => {
+    if (props.creationMode === 'success') {
+      toast.success('Booking created successfully');
+      setBooking({
+        ...booking,
+        meetingRoom: null,
+      });
+    }
+    if (props.creationMode === 'failure') {
+      toast.error('Failed to create booking ' + props.error ? props.error : '');
+    }
+
+  }, [props.creationMode]);
 
 
   useEffect(() => {
@@ -104,6 +120,12 @@ const BookingForm = (props) => {
   }
 
   function onStartTimeChanged(time) {
+    if (booking.endTime < time) {
+      const endTime = new Date(time);
+      endTime.setHours(time.getHours() + 1);
+      setBooking({...booking, startTime: time, endTime: endTime});
+      return
+    }
     setBooking({...booking, startTime: time});
   }
 
@@ -187,8 +209,6 @@ const BookingForm = (props) => {
       });
       return;
     }
-
-    setIsSubmitting(true);
 
     // Dispatch the booking
     const bookingObject = {

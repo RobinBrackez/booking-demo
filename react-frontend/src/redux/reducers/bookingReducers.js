@@ -11,6 +11,7 @@ const initialState = {
   list: [],
   error: '',
   mode: 'initial',
+  creationMode: 'initial',
 }
 
 export const bookingReducers = (state = initialState, booking) => {
@@ -44,6 +45,7 @@ export const bookingReducers = (state = initialState, booking) => {
         ...state,
         error: '',
         mode: 'requested',
+        creationMode: 'requested',
       }
     case CREATE_BOOKING_SUCCESS:
       const updatedBooking = { ...booking.payload, startsAt: new Date(booking.payload.startsAt), endsAt: new Date(booking.payload.endsAt) };
@@ -51,12 +53,14 @@ export const bookingReducers = (state = initialState, booking) => {
         list: [...state.list, updatedBooking],
         error: '',
         mode: 'success',
+        creationMode: 'success',
       }
     case CREATE_BOOKING_FAILURE:
       return {
         list: [...state.list],
         error: booking.payload,
         mode: 'failure',
+        creationMode: 'failure',
       }
     default: return state;
   }
