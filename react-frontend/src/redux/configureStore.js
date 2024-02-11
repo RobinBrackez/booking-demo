@@ -3,18 +3,20 @@ import {createStore, applyMiddleware} from "redux";
 import { thunk } from 'redux-thunk';
 import logger from 'redux-logger';
 import {meetingRoomReducers} from "./reducers/meetingRoomReducers";
+import {bookingReducers} from "./reducers/bookingReducers";
+import {settingReducers} from "./reducers/settingsReducers";
 
 const composeEnhancers =
   typeof window === 'object' &&
   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-      // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
     }) : compose;
 
 
 const rootReducer = combineReducers({
-    meetingRooms: meetingRoomReducers, // the key is how it is called inside the state
-    /* bookings: BookingReducer,*/
+    meetingRooms: meetingRoomReducers,
+    bookings: bookingReducers,
+    settings: settingReducers,
 });
 
 const configureStore = () => {

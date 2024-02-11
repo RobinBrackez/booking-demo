@@ -6,41 +6,64 @@ import {useEffect, useState} from "react";
 import MeetingRoom from "./components/MeetingRoom";
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import {fetchSettings} from "./redux/actions/settingsActions";
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    meetingRoomsMode: state.meetingRooms.mode,
+    settingsMode: state.settings.mode,
     meetingRooms: state.meetingRooms.list,
-    /*    bookings: state.bookings.list,*/
+    // bookings: state.bookings.list,
+    allowedStartDate: state.settings.allowedStartDate,
+    allowedEndDate: state.settings.allowedEndDate,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     fetchMeetingRoomsAction: () => dispatch(fetchMeetingRooms()),
+    fetchSettingsAction: () => dispatch(fetchSettings()),
   }
 }
 
 const App = (props) => {
-  const initialStartTime = new Date();
-  initialStartTime.setHours(8);
-  const initialEndTime = new Date();
-  initialEndTime.setHours(17);
+
+  useEffect(() => {
+    props.fetchMeetingRoomsAction();
+    props.fetchSettingsAction()
+  }, []);
+
   const [booking, setBooking] = useState({
     isValid: false,
     selectedDate: null,
-    startTime: initialStartTime,
-    endTime: initialEndTime,
+    startTime: null,
+    endTime: null,
     meetingRoom: null,
     email: ''
   });
 
   useEffect(() => {
-    props.fetchMeetingRoomsAction();
-  }, []);
+    if (!props.allowedStartDate) {
+      return;
+    }
+    // setBooking({...booking, selectedDate: props.allowedStartDate});
+  }, [props.allowedStartDate]);
 
-  const minDate = new Date();
-  const maxDate = new Date();
-  maxDate.setDate(maxDate.getDate() + 7);
+  if (props.meetingRoomsMode !== 'success' || props.settingsMode !== 'success') {
+    return (
+      <div className="App">
+        <header className="bg-primary text-white p-5">
+          <h1 className="text-center">Loading...</h1>
+        </header>
+      </div>
+    )
+  }
+
+  const initialStartTime = props.allowedStartDate;
+  initialStartTime.setHours(8);
+  const initialEndTime = props.allowedStartDate;
+  initialEndTime.setHours(17);
+
 
   function onStartDateChanged(date) {
     setBooking({...booking, selectedDate: date});
@@ -78,8 +101,8 @@ const App = (props) => {
                       name="startDate"
                       selected={booking.selectedDate}
                       onChange={(date) => onStartDateChanged(date)}
-                      minDate={minDate}
-                      maxDate={new Date(maxDate)}
+                      minDate={props.allowedStartDate}
+                      maxDate={props.allowedEndDate}
                       dateFormat="yyyy/MM/dd"
                     />
                   </div>
