@@ -26,9 +26,11 @@ export const fetchMeetingRoomsFailure = error => {
 }
 
 export const fetchMeetingRooms = () => {
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   return (dispatch) => {
     dispatch(fetchMeetingRoomsRequest())
-    axios.get(`http://0.0.0.0:8000/api/meeting-rooms`)
+    axios.get(apiUrl + `/meeting-rooms`)
       .then(response => {
         const meetingRoomData = response.data['hydra:member'];
         dispatch(fetchMeetingRoomsSuccess(meetingRoomData));
