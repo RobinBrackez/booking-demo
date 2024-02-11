@@ -2,7 +2,7 @@
 
 ## Installation
 
-1. git clone https://github.com/RobinBrackez/booking-demo.git
+1. `git clone https://github.com/RobinBrackez/booking-demo.git`
 2. go to the project root with `cd ./booking-demo`
 2. go to the react folder with `cd ./react-frontend` and run `npm install`
 3. go to the project root with  `cd ..` and run `docker compose up`
@@ -48,3 +48,6 @@ cp ./phpunit.xml.dist ./phpunit.xml
 * **Security**: website has no authentication system, so everyone can register a room in someone else's name.
 * **Security**: api has no authentication system, anyone can fire requests.
 
+## Screenshot
+
+![Alt text](./docs/booking_form.png "Example form")
