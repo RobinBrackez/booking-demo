@@ -45,7 +45,12 @@ const BookingForm = (props) => {
     initialStartTime.setHours(8);
     const initialEndTime = new Date(props.allowedStartDate.toString());
     initialEndTime.setHours(9);
-    setBooking({...booking, startTime: initialStartTime, endTime: initialEndTime, selectedDate: new Date(props.allowedStartDate)});
+    setBooking({
+      ...booking,
+      startTime: initialStartTime,
+      endTime: initialEndTime,
+      selectedDate: new Date(props.allowedStartDate)
+    });
   }, [props.allowedStartDate]);
 
 
@@ -56,6 +61,17 @@ const BookingForm = (props) => {
     props.fetchBookingsByDate(booking.selectedDate);
   }, [booking.selectedDate]);
 
+  useEffect(() => {
+    if (booking.meetingRoom === null) {
+      return;
+    }
+    if (!checkRoomAvailability(booking.meetingRoom.id)) {
+      setBooking({...booking, isValid: false, meetingRoom: null});
+    }
+    if (booking.capacity > booking.meetingRoom.capacity) {
+      setBooking({...booking, isValid: false, meetingRoom: null});
+    }
+  }, [booking.startTime, booking.endTime, booking.selectedDate, booking.capacity]);
 
   if (props.selectedDate === null) {
     return (
@@ -76,7 +92,7 @@ const BookingForm = (props) => {
     endTime.setHours(booking.endTime.getHours());
     endTime.setMinutes(booking.endTime.getMinutes());
 
-    setBooking({...booking, selectedDate: date, startTime: startTime, endTime: endTime});
+    setBooking({...booking, selectedDate: date, startTime: startTime, endTime: endTime, meetingRoom: null});
   }
 
   function onEndTimeChanged(time) {
@@ -106,6 +122,10 @@ const BookingForm = (props) => {
     );
   }
 
+  function onMeetingRoomChanged(meetingRoom) {
+    setBooking({...booking, meetingRoom: meetingRoom});
+  }
+
   function checkRoomAvailability(meetingRoomId) {
     const requestedBooking = booking;  // Ensure 'booking' is defined in the outer scope
     const bookingsForMeetingRoom = getBookingsForMeetingRoom(meetingRoomId);
@@ -132,73 +152,77 @@ const BookingForm = (props) => {
     return !isOverlap;
   }
 
+  function onBook() {
+
+  }
+
   return (
     <div className="card-body">
-      <form>
-        <div className="mb-3">
-          <label htmlFor="startDate" className="form-label">Date</label>
+      <div className="mb-3">
+        <label htmlFor="startDate" className="form-label">Date</label>
+        <DatePicker
+          name="startDate"
+          selected={booking.selectedDate}
+          onChange={(date) => onStartDateChanged(date)}
+          minDate={props.allowedStartDate}
+          maxDate={props.allowedEndDate}
+          dateFormat="yyyy/MM/dd"
+        />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="numberOfParticpants" className="form-label">Number Of Participants</label>
+        <input type="number" className="form-control" id="numberOfParticpants"
+               onChange={(value) => onCapacityChanged(value)}/>
+      </div>
+      <div className="container text-center">
+        <div className="row row-cols-2 g-lg-3">
+          {props.meetingRooms.length > 0 &&
+            props.meetingRooms.map((meetingRoom, index) => (
+              <div className="col" key={index}>
+                <MeetingRoom {...meetingRoom}
+                             isSelected={booking.meetingRoom && meetingRoom.id === booking.meetingRoom.id}
+                             onMeetingRoomChanged={() => onMeetingRoomChanged(meetingRoom)}
+                             timeslotAvailable={checkRoomAvailability(meetingRoom.id)}
+                             maxCapacityExceeded={booking.capacity > meetingRoom.capacity}
+                             bookings={getBookingsForMeetingRoom(meetingRoom.id)}/>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      <div className="mb-3">
+        <div>
+          <p>Select Start Time:</p>
           <DatePicker
-            name="startDate"
-            selected={booking.selectedDate}
-            onChange={(date) => onStartDateChanged(date)}
-            minDate={props.allowedStartDate}
-            maxDate={props.allowedEndDate}
-            dateFormat="yyyy/MM/dd"
+            selected={booking.startTime}
+            onChange={time => onStartTimeChanged(time)}
+            showTimeSelect
+            showTimeSelectOnly
+            timeIntervals={30} // Time selection intervals in minutes
+            timeCaption="Start Time"
+            dateFormat="HH:mm" // Format for time display
           />
         </div>
-        <div className="mb-3">
-          <label htmlFor="numberOfParticpants" className="form-label">Number Of Participants</label>
-          <input type="number" className="form-control" id="numberOfParticpants"
-                 onChange={(value) => onCapacityChanged(value)}/>
+        <div>
+          <p>Select End Time:</p>
+          <DatePicker
+            selected={booking.endTime}
+            onChange={time => onEndTimeChanged(time)}
+            showTimeSelect
+            showTimeSelectOnly
+            timeIntervals={30} // Time selection intervals in minutes
+            timeCaption="End Time"
+            dateFormat="HH:mm" // Format for time display
+            minTime={booking.startTime} // Ensuring end time is after start time
+            maxTime={new Date(booking.endTime).setHours(23, 30)} // Latest selectable time
+          />
         </div>
-        <div className="container text-center">
-          <div className="row row-cols-2 g-lg-3">
-            {props.meetingRooms.length > 0 &&
-              props.meetingRooms.map((meetingRoom, index) => (
-                <div className="col" key={index}>
-                  <MeetingRoom {...meetingRoom}
-                     isAvailable={checkRoomAvailability(meetingRoom.id)}
-                     maxCapacityExceeded={booking.capacity > meetingRoom.capacity}
-                     bookings={getBookingsForMeetingRoom(meetingRoom.id)} />
-                </div>
-              ))
-            }
-          </div>
-        </div>
-        <div className="mb-3">
-          <div>
-            <p>Select Start Time:</p>
-            <DatePicker
-              selected={booking.startTime}
-              onChange={time => onStartTimeChanged(time)}
-              showTimeSelect
-              showTimeSelectOnly
-              timeIntervals={30} // Time selection intervals in minutes
-              timeCaption="Start Time"
-              dateFormat="hh:mm" // Format for time display
-            />
-          </div>
-          <div>
-            <p>Select End Time:</p>
-            <DatePicker
-              selected={booking.endTime}
-              onChange={time => onEndTimeChanged(time)}
-              showTimeSelect
-              showTimeSelectOnly
-              timeIntervals={30} // Time selection intervals in minutes
-              timeCaption="End Time"
-              dateFormat="hh:mm" // Format for time display
-              minTime={booking.startTime} // Ensuring end time is after start time
-              maxTime={new Date(booking.endTime).setHours(23, 30)} // Latest selectable time
-            />
-          </div>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email</label>
-          <input type="email" className="form-control" id="email"/>
-        </div>
-        <button type="submit" className="btn btn-primary" disabled={!booking.isValid}>Book Now</button>
-      </form>
+      </div>
+      <div className="mb-3">
+        <label htmlFor="email" className="form-label">Email</label>
+        <input type="email" className="form-control" id="email"/>
+      </div>
+      <button type="submit" className="btn btn-primary" onClick={() => onBook()}>Book Now</button>
     </div>
   );
 }
