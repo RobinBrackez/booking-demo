@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -21,6 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['booking:read']],
     denormalizationContext: ['groups' => ['booking:write']]
 )]
+#[ApiFilter(DateFilter::class, properties: ['startsAt'])]
 #[ORM\Entity(repositoryClass: BookingRepository::class)]
 class Booking implements Timestampable
 {
