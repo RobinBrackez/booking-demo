@@ -55,27 +55,27 @@ const BookingForm = (props) => {
     initialStartTime.setHours(8);
     const initialEndTime = new Date(props.allowedStartDate.toString());
     initialEndTime.setHours(9);
-    setBooking({
-      ...booking,
+    setBooking(currentBooking => ({
+      ...currentBooking,
       startTime: initialStartTime,
       endTime: initialEndTime,
       selectedDate: new Date(props.allowedStartDate)
-    });
+    }));
   }, [props.allowedStartDate]);
 
   useEffect(() => {
     if (props.creationMode === 'success') {
       toast.success('Booking created successfully');
-      setBooking({
-        ...booking,
+      setBooking(currentBooking => ({
+        ...currentBooking,
         meetingRoom: null,
-      });
+      }));
     }
     if (props.creationMode === 'failure') {
       toast.error('Failed to create booking ' + props.error ? props.error : '');
     }
 
-  }, [props.creationMode]);
+  }, [props.creationMode, props.error]);
 
 
   useEffect(() => {
