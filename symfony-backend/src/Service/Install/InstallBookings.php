@@ -3,10 +3,8 @@
 namespace App\Service\Install;
 
 use App\Entity\Booking;
-use App\Entity\User;
 use App\Repository\BookingRepository;
 use App\Repository\MeetingRoomRepository;
-use App\Repository\UserRepository;
 use App\Service\Install\Contracts\InstallInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -30,7 +28,6 @@ class InstallBookings extends AbstractInstall implements InstallInterface
         LoggerInterface $logger,
         private MeetingRoomRepository $meetingRoomRepository,
         private BookingRepository $bookingRepository,
-        private UserRepository $userRepository,
     ) {
         parent::__construct($jsonFilePath, $entityManager, $logger);
     }
@@ -50,25 +47,15 @@ class InstallBookings extends AbstractInstall implements InstallInterface
             return null; // already booked
         }
 
-        $bookedByUser = $this->userRepository->findOneByEmail($entityData[self::BOOKED_BY_EMAIL_FIELD]);
-
-        if (!$bookedByUser) {
-            // auto create user, there's no separate install script for users
-            $bookedByUser = new User();
-            $bookedByUser->setEmail($entityData[self::BOOKED_BY_EMAIL_FIELD]);
-            $this->logger->info(sprintf('User with email %s not found, auto creating', $entityData[self::BOOKED_BY_EMAIL_FIELD]));
-            $this->entityManager->persist($bookedByUser);
-        }
-
         $booking = new Booking();
         $booking
             ->setStartsAt($startsAt)
             ->setEndsAt($endsAt)
             ->setMeetingRoom($meetingRoom)
-            ->setBookedBy($bookedByUser)
+            ->setEmail($entityData[self::BOOKED_BY_EMAIL_FIELD])
         ;
 
-        $this->logger->info(sprintf('Create booking for user %s', $bookedByUser->getEmail()));
+        $this->logger->info(sprintf('Create booking for user %s', $booking->getEmail()));
 
         return $booking;
     }

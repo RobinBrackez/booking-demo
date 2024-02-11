@@ -4,7 +4,6 @@ namespace App\Tests;
 
 use App\Entity\Booking;
 use App\Entity\MeetingRoom;
-use App\Entity\User;
 use App\Exception\DoubleBookingException;
 use App\Exception\OutOfRangeBookingException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -63,13 +62,12 @@ class BookingTest extends KernelTestCase
         ];
 
         $entityManager = $kernel->getContainer()->get('doctrine')->getManager();
-        $user = $entityManager->getRepository(User::class)->find(1);
 
         foreach ($scenarios as $i => $scenario) {
             $booking = new Booking();
             $meetingRoom = $entityManager->getRepository(MeetingRoom::class)->find($scenario['room_id']);
             $booking
-                ->setBookedBy($user)
+                ->setEmail('test@test.com')
                 ->setMeetingRoom($meetingRoom)
                 ->setStartsAt(new \DateTimeImmutable($scenario['start_date']))
                 ->setEndsAt(new \DateTimeImmutable($scenario['end_date']));
@@ -129,7 +127,6 @@ class BookingTest extends KernelTestCase
         ];
 
         $entityManager = $kernel->getContainer()->get('doctrine')->getManager();
-        $user = $entityManager->getRepository(User::class)->find(1);
 
         foreach ($scenarios as $i => $scenario) {
             $meetingRoom = new MeetingRoom(); // create new meeting room to avoid double booking
@@ -137,7 +134,7 @@ class BookingTest extends KernelTestCase
             $meetingRoom->setCapacity(10);
             $booking = new Booking();
             $booking
-                ->setBookedBy($user)
+                ->setEmail('test@test.com')
                 ->setMeetingRoom($meetingRoom)
                 ->setStartsAt($scenario['start_date'])
                 ->setEndsAt($scenario['end_date']);

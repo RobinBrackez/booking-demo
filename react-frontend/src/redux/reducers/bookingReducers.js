@@ -46,8 +46,9 @@ export const bookingReducers = (state = initialState, booking) => {
         mode: 'requested',
       }
     case CREATE_BOOKING_SUCCESS:
+      const updatedBooking = { ...booking.payload, startsAt: new Date(booking.payload.startsAt), endsAt: new Date(booking.payload.endsAt) };
       return {
-        list: [...state.list, booking.payload],
+        list: [...state.list, updatedBooking],
         error: '',
         mode: 'success',
       }

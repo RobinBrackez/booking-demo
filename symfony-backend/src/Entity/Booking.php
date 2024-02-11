@@ -40,10 +40,8 @@ class Booking implements Timestampable
     #[Groups(['booking:write', 'booking:read'])]
     private ?MeetingRoom $meetingRoom = null;
 
-    #[ORM\ManyToOne(inversedBy: 'bookings', cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: false)]
     #[Groups(['booking:write', 'booking:read'])]
-    private ?User $bookedBy = null;
+    private ?string $email = null;
 
     #[ORM\Column]
     #[Groups(['booking:write', 'booking:read'])]
@@ -70,14 +68,14 @@ class Booking implements Timestampable
         return $this;
     }
 
-    public function getBookedBy(): ?User
+    public function getEmail(): ?string
     {
-        return $this->bookedBy;
+        return $this->email;
     }
 
-    public function setBookedBy(?User $bookedBy): static
+    public function setEmail(string $email): static
     {
-        $this->bookedBy = $bookedBy;
+        $this->email = $email;
 
         return $this;
     }

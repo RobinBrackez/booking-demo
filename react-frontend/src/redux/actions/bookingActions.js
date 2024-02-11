@@ -55,12 +55,12 @@ export const createBooking = (payload) => {
 
   return (dispatch) => {
     dispatch(createBookingRequest());
-    axios.post(apiUrl + `/booking/`,
+    axios.post(apiUrl + `/bookings`,
       payload,
       {
         headers:
           {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/ld+json'
           }
       }
     ).then((response) => {

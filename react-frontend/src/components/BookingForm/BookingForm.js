@@ -183,6 +183,7 @@ const BookingForm = (props) => {
     if (errors.length > 0) {
       errors.forEach(error => {
         toast.error(error);
+        console.log(error);
       });
       return;
     }
@@ -190,14 +191,13 @@ const BookingForm = (props) => {
     setIsSubmitting(true);
 
     // Dispatch the booking
-    props.createBooking({
+    const bookingObject = {
       ...booking,
       startsAt: booking.startTime,
       endsAt: booking.endTime,
-      user: {
-        email: booking.email
-      }
-    });
+    };
+
+    props.createBooking(bookingObject);
   }
 
   function onEmailChanged(event) {
@@ -228,7 +228,7 @@ const BookingForm = (props) => {
             props.meetingRooms.map((meetingRoom, index) => (
               <div className="col" key={index}>
                 <MeetingRoom {...meetingRoom}
-                             isSelected={booking.meetingRoom && meetingRoom.id === booking.meetingRoom.id}
+                             isSelected={booking.meetingRoom && (meetingRoom.id === booking.meetingRoom.id)}
                              onMeetingRoomChanged={() => onMeetingRoomChanged(meetingRoom)}
                              timeslotAvailable={checkRoomAvailability(meetingRoom.id)}
                              maxCapacityExceeded={booking.capacity > meetingRoom.capacity}
@@ -268,10 +268,10 @@ const BookingForm = (props) => {
       </div>
       <div className="mb-3">
         <label htmlFor="email" className="form-label">Email</label>
-        <input type="email" className="form-control" id="email" onClick={(event) => onEmailChanged(event)}/>
+        <input type="email" className="form-control" id="email" onChange={(event) => onEmailChanged(event)}/>
       </div>
       <ToastContainer />
-      <button type="submit" className="btn btn-primary" onChange={() => onBook()}>Book Now</button>
+      <button type="submit" className="btn btn-primary" onClick={() => onBook()}>Book Now</button>
     </div>
   );
 }
