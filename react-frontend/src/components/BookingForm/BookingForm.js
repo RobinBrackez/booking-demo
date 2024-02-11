@@ -243,28 +243,6 @@ const BookingForm = (props) => {
         </div>
       </div>
       <div className="mb-3">
-        <label htmlFor="numberOfParticpants" className="form-label">Number Of Participants</label>
-        <input type="number" className="form-control" id="numberOfParticpants"
-               onChange={(event) => onCapacityChanged(event)}/>
-      </div>
-      <div className="container text-center">
-        <div className="row row-cols-2 g-3">
-          {props.meetingRooms.length > 0 &&
-            props.meetingRooms.map((meetingRoom, index) => (
-              <div className="col" key={index}>
-                <MeetingRoom {...meetingRoom}
-                             isSelected={booking.meetingRoom && (meetingRoom.id === booking.meetingRoom.id)}
-                             onMeetingRoomChanged={() => onMeetingRoomChanged(meetingRoom)}
-                             timeslotAvailable={checkRoomAvailability(meetingRoom.id)}
-                             maxCapacityExceeded={booking.capacity > meetingRoom.capacity}
-                             bookings={getBookingsForMeetingRoom(meetingRoom.id)}/>
-              </div>
-            ))
-          }
-        </div>
-      </div>
-      <hr/>
-      <div className="mb-3">
         <label className="form-label">Select Start Time:</label>
         <div>
           <DatePicker
@@ -294,6 +272,29 @@ const BookingForm = (props) => {
           />
         </div>
       </div>
+      <div className="mb-3">
+        <label htmlFor="numberOfParticpants" className="form-label">Number Of Participants</label>
+        <input type="number" className="form-control" id="numberOfParticpants"
+               onChange={(event) => onCapacityChanged(event)}/>
+      </div>
+      <hr/>
+      <div className="container text-center">
+        <div className="row row-cols-2 g-3">
+          {props.meetingRooms.length > 0 &&
+            props.meetingRooms.map((meetingRoom, index) => (
+              <div className="col" key={index}>
+                <MeetingRoom {...meetingRoom}
+                             isSelected={booking.meetingRoom && (meetingRoom.id === booking.meetingRoom.id)}
+                             onMeetingRoomChanged={() => onMeetingRoomChanged(meetingRoom)}
+                             timeslotAvailable={checkRoomAvailability(meetingRoom.id)}
+                             maxCapacityExceeded={booking.capacity > meetingRoom.capacity}
+                             bookings={getBookingsForMeetingRoom(meetingRoom.id)}/>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      <hr/>
       <div className="mb-3">
         <label htmlFor="email" className="form-label">Email</label>
         <input type="email" className="form-control" id="email" onChange={(event) => onEmailChanged(event)}/>

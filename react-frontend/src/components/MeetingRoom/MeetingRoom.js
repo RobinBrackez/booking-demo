@@ -9,8 +9,8 @@ const MeetingRoom = (props) => {
       <div className="card-body">
         <h5 className="card-title">{props.name}</h5>
         <p className="card-text">Capacity: {props.capacity}</p>
-        {props.maxCapacityExceeded && <p className="card-text">Capacity exceeded</p>}
-        {props.bookings.length > 0 && <p className="card-text">This room is unavailable at:</p>}
+        {props.maxCapacityExceeded && <p className="card-text">Too many participants for this meeting room</p>}
+        {props.bookings.length > 0 && <p className="card-text">Current bookings:</p>}
         <p className="card-text">{props.bookings && (
           props.bookings.map((booking) => (
             <span key={booking.id}>
