@@ -26,7 +26,7 @@ class User implements \Stringable
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['booking:read'])]
+    #[Groups(['booking:read', 'booking:write'])]
     private ?string $email = null;
 
     #[ORM\OneToMany(targetEntity: Booking::class, mappedBy: 'bookedBy')]

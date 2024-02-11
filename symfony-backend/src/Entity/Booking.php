@@ -40,7 +40,7 @@ class Booking implements Timestampable
     #[Groups(['booking:write', 'booking:read'])]
     private ?MeetingRoom $meetingRoom = null;
 
-    #[ORM\ManyToOne(inversedBy: 'bookings')]
+    #[ORM\ManyToOne(inversedBy: 'bookings', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['booking:write', 'booking:read'])]
     private ?User $bookedBy = null;
