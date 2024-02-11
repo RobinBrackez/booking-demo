@@ -8,7 +8,7 @@ import MeetingRoom from "./components/MeetingRoom";
 const mapStateToProps = (state, ownProps) => {
   return {
     meetingRooms: state.meetingRooms.list,
-/*    bookings: state.bookings.list,*/
+    /*    bookings: state.bookings.list,*/
   }
 }
 
@@ -39,26 +39,27 @@ const App = (props) => {
               <div className="card-body">
                 <form>
                   <div className="mb-3">
-                    <label htmlFor="meetingRoom" className="form-label">Meeting Room Name</label>
-                    {props.meetingRooms.length > 0 && (
-                      <div>
-                        {props.meetingRooms.map((room, index) => (
-                          <MeetingRoom key={index} {...room} />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="date" className="form-label">Date</label>
-                    <input type="date" className="form-control" id="date" />
+                    <label htmlFor="email" className="form-label">Email</label>
+                    <input type="time" className="form-control" id="email"/>
                   </div>
                   <div className="mb-3">
                     <label htmlFor="startTime" className="form-label">Start Time</label>
-                    <input type="time" className="form-control" id="startTime" />
+                    <input type="time" className="form-control" id="startTime"/>
                   </div>
                   <div className="mb-3">
                     <label htmlFor="endTime" className="form-label">End Time</label>
-                    <input type="time" className="form-control" id="endTime" />
+                    <input type="time" className="form-control" id="endTime"/>
+                  </div>
+                  <div className="container text-center">
+                    <div className="row row-cols-2 g-lg-3">
+                      {props.meetingRooms.length > 0 &&
+                        props.meetingRooms.map((room, index) => (
+                          <div className="col" key={index}>
+                            <MeetingRoom {...room} isAvailable />
+                          </div>
+                        ))
+                      }
+                    </div>
                   </div>
                   <button type="submit" className="btn btn-primary">Book Now</button>
                 </form>
