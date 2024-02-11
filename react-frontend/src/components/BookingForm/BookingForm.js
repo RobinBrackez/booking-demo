@@ -5,7 +5,7 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import {createBooking, fetchBookingsByDate} from "../../redux/actions/bookingActions";
 import {formatDateYMD} from "../../utils/dateUtils";
-import { ToastContainer, toast } from 'react-toastify';
+import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const mapStateToProps = (state) => {
@@ -28,7 +28,14 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-
+/**
+ * Receives meeting rooms and settings from the store.
+ * Is responsible for creating new bookings, and requesting bookings for a given date.
+ *
+ * Possible todos:
+ * - disable form when submitting
+ * - implement better css-styles for the form
+ */
 const BookingForm = (props) => {
 
   const [booking, setBooking] = useState({
@@ -39,8 +46,6 @@ const BookingForm = (props) => {
     capacity: 0,
     email: ''
   });
-
-  const[isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!props.allowedStartDate) {
@@ -152,7 +157,7 @@ const BookingForm = (props) => {
   }
 
   function checkRoomAvailability(meetingRoomId) {
-    const requestedBooking = booking;  // Ensure 'booking' is defined in the outer scope
+    const requestedBooking = booking; // use a less ambiguous name
     const bookingsForMeetingRoom = getBookingsForMeetingRoom(meetingRoomId);
 
     // Room is available if there are no bookings for the meeting room
@@ -163,9 +168,7 @@ const BookingForm = (props) => {
     // Check for any overlapping booking
     const isOverlap = bookingsForMeetingRoom.some((registeredBooking) => {
       const startB = new Date(requestedBooking.startTime);
-
       const endB = new Date(requestedBooking.endTime);
-
       const startA = registeredBooking.startsAt;
       const endA = registeredBooking.endsAt;
 
@@ -228,14 +231,16 @@ const BookingForm = (props) => {
     <div className="card-body">
       <div className="mb-3">
         <label htmlFor="startDate" className="form-label">Date</label>
-        <DatePicker
-          name="startDate"
-          selected={booking.selectedDate}
-          onChange={(date) => onStartDateChanged(date)}
-          minDate={props.allowedStartDate}
-          maxDate={props.allowedEndDate}
-          dateFormat="yyyy/MM/dd"
-        />
+        <div>
+          <DatePicker
+            name="startDate"
+            selected={booking.selectedDate}
+            onChange={(date) => onStartDateChanged(date)}
+            minDate={props.allowedStartDate}
+            maxDate={props.allowedEndDate}
+            dateFormat="dd/MM/yyyy"
+          />
+        </div>
       </div>
       <div className="mb-3">
         <label htmlFor="numberOfParticpants" className="form-label">Number Of Participants</label>
@@ -243,7 +248,7 @@ const BookingForm = (props) => {
                onChange={(event) => onCapacityChanged(event)}/>
       </div>
       <div className="container text-center">
-        <div className="row row-cols-2 g-lg-3">
+        <div className="row row-cols-2 g-3">
           {props.meetingRooms.length > 0 &&
             props.meetingRooms.map((meetingRoom, index) => (
               <div className="col" key={index}>
@@ -258,9 +263,10 @@ const BookingForm = (props) => {
           }
         </div>
       </div>
+      <hr/>
       <div className="mb-3">
+        <label className="form-label">Select Start Time:</label>
         <div>
-          <p>Select Start Time:</p>
           <DatePicker
             selected={booking.startTime}
             onChange={time => onStartTimeChanged(time)}
@@ -271,8 +277,10 @@ const BookingForm = (props) => {
             dateFormat="HH:mm" // Format for time display
           />
         </div>
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Select End Time:</label>
         <div>
-          <p>Select End Time:</p>
           <DatePicker
             selected={booking.endTime}
             onChange={time => onEndTimeChanged(time)}
@@ -290,7 +298,7 @@ const BookingForm = (props) => {
         <label htmlFor="email" className="form-label">Email</label>
         <input type="email" className="form-control" id="email" onChange={(event) => onEmailChanged(event)}/>
       </div>
-      <ToastContainer />
+      <ToastContainer/>
       <button type="submit" className="btn btn-primary" onClick={() => onBook()}>Book Now</button>
     </div>
   );
