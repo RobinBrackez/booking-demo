@@ -30,10 +30,10 @@ class BookingValidationListener
             throw new OutOfRangeBookingException('Booking can\'t take place over more than one day');
         }
         if ($booking->getStartsAt() > $booking->getEndsAt()) {
-            throw new \InvalidArgumentException('Start date cannot be after end date');
+            throw new OutOfRangeBookingException('Start date cannot be after end date');
         }
         if ($booking->getStartsAt() === $booking->getEndsAt()) {
-            throw new \InvalidArgumentException('Start time cannot be equal to the end time');
+            throw new OutOfRangeBookingException('Start time cannot be equal to the end time');
         }
         $bookingRepository = $args->getObjectManager()->getRepository(Booking::class);
         $overlappingBooking = $bookingRepository->getOverlappingBooking($booking);
