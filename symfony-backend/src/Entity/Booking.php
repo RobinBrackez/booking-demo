@@ -41,6 +41,7 @@ class Booking implements Timestampable
     private ?MeetingRoom $meetingRoom = null;
 
     #[Groups(['booking:write', 'booking:read'])]
+    #[ORM\Column]
     private ?string $email = null;
 
     #[ORM\Column]

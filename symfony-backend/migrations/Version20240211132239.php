@@ -11,7 +11,7 @@ final class Version20240211132239 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Remove user object';
     }
 
     public function up(Schema $schema): void
