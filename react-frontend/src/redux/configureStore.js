@@ -1,5 +1,4 @@
-import {combineReducers, compose} from "redux";
-import {createStore, applyMiddleware} from "redux";
+import { createStore, applyMiddleware, compose, combineReducers } from "redux";
 import { thunk } from 'redux-thunk';
 import logger from 'redux-logger';
 import {meetingRoomReducers} from "./reducers/meetingRoomReducers";

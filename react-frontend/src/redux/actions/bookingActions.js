@@ -7,6 +7,7 @@ import {
   FETCH_BOOKINGS_REQUEST,
   FETCH_BOOKINGS_SUCCESS
 } from "../types/bookingTypes";
+import {formatDateYMD} from "../../utils/dateUtils";
 
 export const fetchBookingsRequest = () => {
   return {
@@ -50,9 +51,11 @@ export const createBookingFailure = error => {
 
 
 export const createBooking = (payload) => {
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   return (dispatch) => {
     dispatch(createBookingRequest());
-    axios.post(`/api/booking/`,
+    axios.post(apiUrl + `/booking/`,
       payload,
       {
         headers:
@@ -70,13 +73,17 @@ export const createBooking = (payload) => {
   }
 }
 
-export const fetchBookingsByDate = (startDate, endDate) => {
+export const fetchBookingsByDate = (startDate) => {
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   return (dispatch) => {
     dispatch(fetchBookingsRequest())
-    axios.get(`/api/bookings/${feature.id}/${person.id}`)
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1);
+    axios.get(apiUrl + `/bookings?startsAt[before]=${formatDateYMD(endDate)}&startsAt[after]=${formatDateYMD(startDate)}`)
       .then(response => {
-        const types = response.data;
-        dispatch(fetchBookingsSuccess(types));
+        const bookings = response.data['hydra:member'];
+        dispatch(fetchBookingsSuccess(bookings));
       })
       .catch(error => {
         const errorMsg = error.message;

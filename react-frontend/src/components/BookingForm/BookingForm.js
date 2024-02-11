@@ -3,17 +3,26 @@ import {useEffect, useState} from "react";
 import MeetingRoom from "../MeetingRoom";
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import {fetchBookingsByDate} from "../../redux/actions/bookingActions";
+import {formatDateYMD} from "../../utils/dateUtils";
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     meetingRoomsMode: state.meetingRooms.mode,
     settingsMode: state.settings.mode,
     meetingRooms: state.meetingRooms.list,
-    // bookings: state.bookings.list,
+    bookings: state.bookings.list,
     allowedStartDate: state.settings.allowedStartDate,
     allowedEndDate: state.settings.allowedEndDate,
   }
 }
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchBookingsByDate: (date) => dispatch(fetchBookingsByDate(date)),
+  }
+}
+
 
 const BookingForm = (props) => {
 
@@ -23,18 +32,32 @@ const BookingForm = (props) => {
     startTime: null,
     endTime: null,
     meetingRoom: null,
+    capacity: 0,
     email: ''
   });
 
 
-  // useEffect(() => {
-  //   if (!props.allowedStartDate) {
-  //     return;
-  //   }
-  //   // setBooking({...booking, selectedDate: props.allowedStartDate});
-  // }, [props.allowedStartDate]);
+  useEffect(() => {
+    if (!props.allowedStartDate) {
+      return;
+    }
+    const initialStartTime = new Date(props.allowedStartDate.toString());
+    initialStartTime.setHours(8);
+    const initialEndTime = new Date(props.allowedStartDate.toString());
+    initialEndTime.setHours(9);
+    setBooking({...booking, startTime: initialStartTime, endTime: initialEndTime, selectedDate: new Date(props.allowedStartDate)});
+  }, [props.allowedStartDate]);
 
-  if (props.meetingRoomsMode !== 'success' || props.settingsMode !== 'success') {
+
+  useEffect(() => {
+    if (booking.selectedDate === null) {
+      return;
+    }
+    props.fetchBookingsByDate(booking.selectedDate);
+  }, [booking.selectedDate]);
+
+
+  if (props.selectedDate === null) {
     return (
       <div className="App">
         <header className="bg-primary text-white p-5">
@@ -44,17 +67,20 @@ const BookingForm = (props) => {
     )
   }
 
-  const initialStartTime = new Date(props.allowedStartDate);
-  initialStartTime.setHours(8);
-  const initialEndTime = new Date(props.allowedStartDate);
-  initialEndTime.setHours(17);
-
-
   function onStartDateChanged(date) {
-    setBooking({...booking, selectedDate: date});
+    const startTime = new Date(date);
+    startTime.setHours(booking.startTime.getHours());
+    startTime.setMinutes(booking.startTime.getMinutes());
+
+    const endTime = new Date(date);
+    endTime.setHours(booking.endTime.getHours());
+    endTime.setMinutes(booking.endTime.getMinutes());
+
+    setBooking({...booking, selectedDate: date, startTime: startTime, endTime: endTime});
   }
 
   function onEndTimeChanged(time) {
+    console.log('onEndTimeChanged', time);
     setBooking({...booking, endTime: time});
   }
 
@@ -62,13 +88,53 @@ const BookingForm = (props) => {
     setBooking({...booking, startTime: time});
   }
 
+  function onCapacityChanged(event) {
+    setBooking({...booking, capacity: event.target.value});
+  }
+
+  function getBookingsForMeetingRoom(meetingRoomId) {
+    if (booking.selectedDate === null) {
+      return [];
+    }
+
+    const selectedDateString = formatDateYMD(booking.selectedDate);
+
+    return props.bookings.filter(
+      (registeredBooking) =>
+        registeredBooking.meetingRoom.id === meetingRoomId &&
+        formatDateYMD(registeredBooking.startsAt) === selectedDateString
+    );
+  }
+
+  function checkRoomAvailability(meetingRoomId) {
+    const requestedBooking = booking;  // Ensure 'booking' is defined in the outer scope
+    const bookingsForMeetingRoom = getBookingsForMeetingRoom(meetingRoomId);
+
+    // Room is available if there are no bookings for the meeting room
+    if (bookingsForMeetingRoom.length === 0) {
+      return true;
+    }
+
+    // Check for any overlapping booking
+    const isOverlap = bookingsForMeetingRoom.some((registeredBooking) => {
+      const startB = new Date(requestedBooking.startTime);
+
+      const endB = new Date(requestedBooking.endTime);
+
+      const startA = registeredBooking.startsAt;
+      const endA = registeredBooking.endsAt;
+
+      // Overlap condition
+      return startA < endB && startB < endA;
+    });
+
+    // Room is available if there's no overlap
+    return !isOverlap;
+  }
+
   return (
     <div className="card-body">
       <form>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email</label>
-          <input type="email" className="form-control" id="email"/>
-        </div>
         <div className="mb-3">
           <label htmlFor="startDate" className="form-label">Date</label>
           <DatePicker
@@ -81,7 +147,25 @@ const BookingForm = (props) => {
           />
         </div>
         <div className="mb-3">
-
+          <label htmlFor="numberOfParticpants" className="form-label">Number Of Participants</label>
+          <input type="number" className="form-control" id="numberOfParticpants"
+                 onChange={(value) => onCapacityChanged(value)}/>
+        </div>
+        <div className="container text-center">
+          <div className="row row-cols-2 g-lg-3">
+            {props.meetingRooms.length > 0 &&
+              props.meetingRooms.map((meetingRoom, index) => (
+                <div className="col" key={index}>
+                  <MeetingRoom {...meetingRoom}
+                     isAvailable={checkRoomAvailability(meetingRoom.id)}
+                     maxCapacityExceeded={booking.capacity > meetingRoom.capacity}
+                     bookings={getBookingsForMeetingRoom(meetingRoom.id)} />
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <div className="mb-3">
           <div>
             <p>Select Start Time:</p>
             <DatePicker
@@ -89,9 +173,9 @@ const BookingForm = (props) => {
               onChange={time => onStartTimeChanged(time)}
               showTimeSelect
               showTimeSelectOnly
-              timeIntervals={15} // Time selection intervals in minutes
+              timeIntervals={30} // Time selection intervals in minutes
               timeCaption="Start Time"
-              dateFormat="h:mm aa" // Format for time display
+              dateFormat="hh:mm" // Format for time display
             />
           </div>
           <div>
@@ -101,24 +185,17 @@ const BookingForm = (props) => {
               onChange={time => onEndTimeChanged(time)}
               showTimeSelect
               showTimeSelectOnly
-              timeIntervals={15} // Time selection intervals in minutes
+              timeIntervals={30} // Time selection intervals in minutes
               timeCaption="End Time"
-              dateFormat="h:mm aa" // Format for time display
+              dateFormat="hh:mm" // Format for time display
               minTime={booking.startTime} // Ensuring end time is after start time
-              maxTime={new Date(booking.startTime).setHours(23, 45)} // Latest selectable time
+              maxTime={new Date(booking.endTime).setHours(23, 30)} // Latest selectable time
             />
           </div>
         </div>
-        <div className="container text-center">
-          <div className="row row-cols-2 g-lg-3">
-            {props.meetingRooms.length > 0 &&
-              props.meetingRooms.map((room, index) => (
-                <div className="col" key={index}>
-                  <MeetingRoom {...room} isAvailable={null} statusMessage={null} />
-                </div>
-              ))
-            }
-          </div>
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">Email</label>
+          <input type="email" className="form-control" id="email"/>
         </div>
         <button type="submit" className="btn btn-primary" disabled={!booking.isValid}>Book Now</button>
       </form>
@@ -126,4 +203,4 @@ const BookingForm = (props) => {
   );
 }
 
-export default connect(mapStateToProps)(BookingForm);
+export default connect(mapStateToProps, mapDispatchToProps)(BookingForm);

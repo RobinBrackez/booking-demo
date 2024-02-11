@@ -21,8 +21,15 @@ export const bookingReducers = (state = initialState, booking) => {
         mode: 'requested',
       }
     case FETCH_BOOKINGS_SUCCESS:
+      const updatedList = [
+        ...state.list,
+        ...booking.payload
+          .map(b => ({ ...b, startsAt: new Date(b.startsAt), endsAt: new Date(b.endsAt) }))
+          .filter(newBooking => !state.list.some(existing => existing.id === newBooking.id))
+      ];
+
       return {
-        list: booking.payload,
+        list: updatedList,
         error: '',
         mode: 'success',
       }

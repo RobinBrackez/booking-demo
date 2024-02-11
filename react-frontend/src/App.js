@@ -23,7 +23,6 @@ const mapDispatchToProps = (dispatch) => {
 const App = (props) => {
 
   useEffect(() => {
-    console.log("Fetch Meeting Rooms");
     props.fetchMeetingRoomsAction();
     props.fetchSettingsAction()
   }, []);

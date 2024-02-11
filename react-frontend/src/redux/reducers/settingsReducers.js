@@ -11,8 +11,8 @@ const initialState = {
   mode: 'initial',
 }
 
-export const settingReducers = (state = initialState, setting) => {
-  switch (setting.type) {
+export const settingReducers = (state = initialState, settings) => {
+  switch (settings.type) {
     case FETCH_SETTINGS_REQUEST:
       return {
         ...state,
@@ -20,8 +20,8 @@ export const settingReducers = (state = initialState, setting) => {
       }
     case FETCH_SETTINGS_SUCCESS:
       return {
-        allowedStartDate: new Date(setting.allowedStartDate),
-        allowedEndDate: new Date(setting.allowedEndDate),
+        allowedStartDate: new Date(settings.payload.allowedStartDate),
+        allowedEndDate: new Date(settings.payload.allowedEndDate),
         error: '',
         mode: 'success',
       }
@@ -29,7 +29,7 @@ export const settingReducers = (state = initialState, setting) => {
       return {
         allowedStartDate: null,
         allowedEndDate: null,
-        error: setting.payload,
+        error: settings.payload,
         mode: 'failure',
       }
     default: return state;
