@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Timestampable;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
@@ -44,6 +45,7 @@ class Booking implements Timestampable
 
     #[Groups(['booking:write', 'booking:read'])]
     #[ORM\Column]
+    #[Assert\Email()]
     private ?string $email = null;
 
     #[ORM\Column]
