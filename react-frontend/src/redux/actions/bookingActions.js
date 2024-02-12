@@ -73,6 +73,9 @@ export const createBooking = (payload) => {
   }
 }
 
+/**
+ * @todo Error handling doesn't display the detailled error message but a generic one
+ */
 export const fetchBookingsByDate = (startDate) => {
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -80,13 +83,17 @@ export const fetchBookingsByDate = (startDate) => {
     dispatch(fetchBookingsRequest())
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 1);
-    axios.get(apiUrl + `/bookings?startsAt[before]=${formatDateYMD(endDate)}&startsAt[after]=${formatDateYMD(startDate)}&order[startsAt]=asc`)
+    axios.get(`${apiUrl}/bookings?startsAt[before]=${formatDateYMD(endDate)}&startsAt[after]=${formatDateYMD(startDate)}&order[startsAt]=asc`)
       .then(response => {
         const bookings = response.data['hydra:member'];
         dispatch(fetchBookingsSuccess(bookings));
       })
       .catch(error => {
-        const errorMsg = error.message;
+        let errorMsg = error.message;
+        console.log(error);
+        if (error.response && error.response.data && error.response.data.detail) {
+          errorMsg = error.response.data.detail;
+        }
         dispatch(fetchBookingsFailure(errorMsg));
       })
   }

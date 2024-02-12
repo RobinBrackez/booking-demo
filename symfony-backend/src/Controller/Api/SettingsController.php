@@ -6,6 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Returns the settings data.
+ *
+ * @todo document with nelmio/api-doc-bundle so that it shows up in the api documentation.
+ */
 #[Route('/api/settings', name: 'api_settings_', methods: ['GET'])]
 class SettingsController extends AbstractController
 {

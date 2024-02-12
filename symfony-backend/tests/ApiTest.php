@@ -6,6 +6,9 @@ use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 
 class ApiTest extends ApiTestCase
 {
+    /**
+     * @todo extend to check api response
+     */
     public function testApiCalls(): void
     {
         $client = $this->createClient();

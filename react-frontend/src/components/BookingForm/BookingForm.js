@@ -35,6 +35,8 @@ const mapDispatchToProps = (dispatch) => {
  * Possible todos:
  * - disable form when submitting
  * - implement better css-styles for the form
+ * - validation for numeric field capacity
+ * - validation for email field
  */
 const BookingForm = (props) => {
 
@@ -91,6 +93,7 @@ const BookingForm = (props) => {
     }
     if (!checkRoomAvailability(booking.meetingRoom.id)) {
       setBooking({...booking, meetingRoom: null});
+      return;
     }
     if (booking.capacity > booking.meetingRoom.capacity) {
       setBooking({...booking, meetingRoom: null});
@@ -107,7 +110,7 @@ const BookingForm = (props) => {
     )
   }
 
-  function onStartDateChanged(date) {
+  function onSelectedDateChanged(date) {
     const startTime = new Date(date);
     startTime.setHours(booking.startTime.getHours());
     startTime.setMinutes(booking.startTime.getMinutes());
@@ -124,14 +127,14 @@ const BookingForm = (props) => {
     setBooking({...booking, endTime: time});
   }
 
-  function onStartTimeChanged(time) {
-    if (booking.endTime < time) {
-      const endTime = new Date(time);
-      endTime.setHours(time.getHours() + 1);
-      setBooking({...booking, startTime: time, endTime: endTime});
+  function onStartTimeChanged(startTime) {
+    if (booking.endTime < startTime) {
+      const endTime = new Date(startTime);
+      endTime.setHours(startTime.getHours() + 1);
+      setBooking({...booking, startTime: startTime, endTime: endTime});
       return
     }
-    setBooking({...booking, startTime: time});
+    setBooking({...booking, startTime: startTime});
   }
 
   function onCapacityChanged(event) {
@@ -157,7 +160,7 @@ const BookingForm = (props) => {
   }
 
   function checkRoomAvailability(meetingRoomId) {
-    const requestedBooking = booking; // use a less ambiguous name
+    const requestedBooking = booking; // name 'booking' may be prone to misunderstandings in this case
     const bookingsForMeetingRoom = getBookingsForMeetingRoom(meetingRoomId);
 
     // Room is available if there are no bookings for the meeting room
@@ -230,12 +233,12 @@ const BookingForm = (props) => {
   return (
     <div className="card-body">
       <div className="mb-3">
-        <label htmlFor="startDate" className="form-label">Date</label>
+        <label htmlFor="selectedDate" className="form-label">Date</label>
         <div>
           <DatePicker
-            name="startDate"
+            name="selectedDate"
             selected={booking.selectedDate}
-            onChange={(date) => onStartDateChanged(date)}
+            onChange={(date) => onSelectedDateChanged(date)}
             minDate={props.allowedStartDate}
             maxDate={props.allowedEndDate}
             dateFormat="dd/MM/yyyy"
@@ -250,9 +253,9 @@ const BookingForm = (props) => {
             onChange={time => onStartTimeChanged(time)}
             showTimeSelect
             showTimeSelectOnly
-            timeIntervals={30} // Time selection intervals in minutes
+            timeIntervals={30}
             timeCaption="Start Time"
-            dateFormat="HH:mm" // Format for time display
+            dateFormat="HH:mm"
           />
         </div>
       </div>
@@ -264,11 +267,11 @@ const BookingForm = (props) => {
             onChange={time => onEndTimeChanged(time)}
             showTimeSelect
             showTimeSelectOnly
-            timeIntervals={30} // Time selection intervals in minutes
+            timeIntervals={30}
             timeCaption="End Time"
-            dateFormat="HH:mm" // Format for time display
+            dateFormat="HH:mm"
             minTime={booking.startTime} // Ensuring end time is after start time
-            maxTime={new Date(booking.endTime).setHours(23, 30)} // Latest selectable time
+            maxTime={new Date(booking.endTime).setHours(23, 30)}
           />
         </div>
       </div>

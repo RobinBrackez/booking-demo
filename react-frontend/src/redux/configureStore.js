@@ -5,6 +5,9 @@ import {meetingRoomReducers} from "./reducers/meetingRoomReducers";
 import {bookingReducers} from "./reducers/bookingReducers";
 import {settingReducers} from "./reducers/settingsReducers";
 
+/**
+ * @todo I think there's a bug here that fetches the GET api-calls twice onload
+ */
 const composeEnhancers =
   typeof window === 'object' &&
   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
