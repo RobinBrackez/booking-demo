@@ -50,7 +50,11 @@ export const bookingReducers = (state = initialState, booking) => {
         creationMode: 'requested',
       }
     case CREATE_BOOKING_SUCCESS:
-      const updatedBooking = { ...booking.payload, startsAt: new Date(booking.payload.startsAt), endsAt: new Date(booking.payload.endsAt) };
+      const updatedBooking = {
+        ...booking.payload,
+        startsAt: new Date(booking.payload.startsAt),
+        endsAt: new Date(booking.payload.endsAt)
+      };
       const sortedBookings = [...state.list, updatedBooking].sort((a, b) => {
         return new Date(a.startsAt) - new Date(b.startsAt);
       });
