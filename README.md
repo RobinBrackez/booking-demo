@@ -47,6 +47,7 @@ cp ./phpunit.xml.dist ./phpunit.xml
 
 * There's an issue with the **timezones**. The app displays everything one hour ahead compared to the database. This is because the timezone is not saved in the db-field, and I didn't keep it into account while developing.
 * When refreshing, the api calls are called twice.
+* Form validation can be more extensive
 * **Security**: website has no authentication system, so everyone can register a room in someone else's name.
 * **Security**: api has no authentication system, anyone can fire requests.
 
