@@ -49,11 +49,7 @@ const App = (props) => {
               <div className="card-header">
                 <h2 className="h4">Meeting Room Reservation Form</h2>
               </div>
-              {(props.meetingRoomsMode !== 'success' || props.settingsMode !== 'success') ? (
-                <div className="card-body">
-                  <h3>Loading...</h3>
-                </div>
-              ) : <BookingForm/>}
+              <BookingForm/>
             </div>
           </div>
         </div>
